@@ -1,0 +1,340 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Git Repository",
+        "description": "Set up a new Git repository for the BAML .NET Client Library, ensuring a clean history and proper structure.",
+        "details": "Use `git init` in the project root. Add all existing code, ensuring no build artifacts or binaries are committed. Make an initial commit with the working codebase. Configure repository details (name, description, topics).",
+        "testStrategy": "Verify repository initializes correctly, contains only source files, and initial commit builds successfully.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "in-progress",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Add .gitignore File",
+        "description": "Create a .gitignore file to exclude build artifacts, binaries, and user-specific files from version control.",
+        "details": "Use the standard .NET .gitignore template. Ensure exclusion of bin/, obj/, .vs/, *.user, *.suo, and other IDE-specific files.",
+        "testStrategy": "Run `git status` after building to confirm only source files are tracked.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Add LICENSE File (Apache 2.0)",
+        "description": "Include an Apache 2.0 LICENSE file in the repository root as specified in the README.",
+        "details": "Download the official Apache 2.0 license text. Place it in LICENSE at the root. Update README to reference the license.",
+        "testStrategy": "Check that LICENSE file is present and matches Apache 2.0 text.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Add Copyright Headers",
+        "description": "Add copyright headers to all source files to ensure legal compliance.",
+        "details": "Insert a standard copyright notice referencing the Apache 2.0 license at the top of each .cs file.",
+        "testStrategy": "Automated script or manual review to confirm all source files have correct headers.",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Fix BAML Parser Regex Pattern",
+        "description": "Correct the PropertyRegex in BamlParser to parse 'name type' format as required by BAML.",
+        "details": "Update the regex to match 'name type' (e.g., 'role string') instead of 'type name'. Test with representative BAML input.",
+        "testStrategy": "Unit tests for BamlParser to confirm correct parsing of 'name type' properties.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Resolve Compilation Errors in Examples",
+        "description": "Fix all build errors in SimpleExample and StreamingExample projects.",
+        "details": "Identify and correct code issues causing build failures, including type resolution and API usage.",
+        "testStrategy": "Build both example projects and ensure successful compilation without errors.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Fix Nullable Reference Type Warnings",
+        "description": "Address all nullable reference type warnings in BamlRuntime.cs and other affected files.",
+        "details": "Update code to use nullable annotations, add null checks, and refactor as needed to eliminate warnings.",
+        "testStrategy": "Build with nullable warnings as errors and confirm zero warnings.",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Ensure Source Generator Produces Valid C#",
+        "description": "Verify and fix the Baml.SourceGenerator to ensure it generates valid, compilable C# code.",
+        "details": "Test the source generator with various BAML inputs. Fix any issues with generated code syntax or semantics.",
+        "testStrategy": "Integration tests that run the generator and compile the output.",
+        "priority": "high",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Unit Tests for BamlParser",
+        "description": "Create comprehensive unit tests for all BamlParser functionality.",
+        "details": "Add a test project. Write tests for valid, invalid, and edge-case BAML inputs. Use xUnit or NUnit as per project standards.",
+        "testStrategy": "Run tests and ensure all pass with high coverage of parser logic.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Add Integration Tests for Source Generator",
+        "description": "Implement integration tests to validate end-to-end BAML-to-C# code generation.",
+        "details": "Test that BAML files are correctly transformed into valid C# code by the source generator. Use snapshot testing for output verification.",
+        "testStrategy": "Run integration tests and verify generated code compiles and matches expectations.",
+        "priority": "high",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Add Tests for BamlRuntime HTTP Functionality",
+        "description": "Create tests for HTTP-related features in BamlRuntime, including mocking HTTP requests/responses.",
+        "details": "Use a mocking framework (e.g., Moq) to simulate HTTP interactions. Test error handling and edge cases.",
+        "testStrategy": "Run tests and verify correct behavior for all HTTP scenarios.",
+        "priority": "high",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Add Test Projects to Solution",
+        "description": "Ensure all test projects are included in the Visual Studio solution file.",
+        "details": "Add test projects for parser, source generator, and runtime to the .sln. Organize solution folders for clarity.",
+        "testStrategy": "Open solution and confirm all test projects are present and buildable.",
+        "priority": "high",
+        "dependencies": [
+          9,
+          10,
+          11
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Achieve 80%+ Code Coverage",
+        "description": "Expand and refine tests to reach at least 80% code coverage across all components.",
+        "details": "Use a coverage tool (e.g., Coverlet). Identify untested code paths and add tests as needed.",
+        "testStrategy": "Run coverage analysis and confirm threshold is met.",
+        "priority": "high",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Implement Branch Protection and Contribution Guidelines",
+        "description": "Set up branch protection rules and add CONTRIBUTING.md to guide contributors.",
+        "details": "Enable required status checks, pull request reviews, and prevent direct commits to main. Write clear contribution guidelines.",
+        "testStrategy": "Attempt to push directly to main and verify protection. Review CONTRIBUTING.md for clarity.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Review and Improve README.md",
+        "description": "Enhance the README for clarity, completeness, and professionalism.",
+        "details": "Add installation, usage, and contribution instructions. Ensure all sections are up to date and accurate.",
+        "testStrategy": "Manual review for completeness and clarity. Peer review for accuracy.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Add API Documentation",
+        "description": "Generate and include comprehensive API documentation for all public types and members.",
+        "details": "Use XML comments in code and generate docs with DocFX or similar. Link documentation from README.",
+        "testStrategy": "Build documentation and verify all public APIs are documented.",
+        "priority": "medium",
+        "dependencies": [
+          7,
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Add Troubleshooting Guide",
+        "description": "Create a troubleshooting guide for common build, usage, and runtime issues.",
+        "details": "Document frequent problems and solutions. Link from README and CONTRIBUTING.md.",
+        "testStrategy": "Review guide for coverage and clarity. Test solutions for listed issues.",
+        "priority": "medium",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Add Performance Guidelines",
+        "description": "Document performance characteristics and optimization tips for the library.",
+        "details": "Describe best practices for efficient use, known bottlenecks, and tuning options.",
+        "testStrategy": "Review documentation for accuracy and actionable advice.",
+        "priority": "medium",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Set Up GitHub Actions for CI/CD",
+        "description": "Configure GitHub Actions workflows for automated builds and tests.",
+        "details": "Create YAML workflows for build, test, and code coverage on push and pull request. Use matrix builds for multiple .NET versions.",
+        "testStrategy": "Push changes and verify workflows execute and pass.",
+        "priority": "medium",
+        "dependencies": [
+          13
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Add Code Coverage Reporting to CI",
+        "description": "Integrate code coverage reporting into CI pipeline.",
+        "details": "Configure Coverlet or similar to upload coverage reports as CI artifacts and display coverage summary in PRs.",
+        "testStrategy": "Check CI run for coverage report and PR comment.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Set Up Automated Security Scanning",
+        "description": "Enable GitHub security features and add code scanning to CI.",
+        "details": "Enable Dependabot alerts, secret scanning, and code scanning. Add security workflow using GitHub's recommended actions.",
+        "testStrategy": "Verify security alerts and code scanning results appear in repository.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Configure NuGet Packaging",
+        "description": "Set up projects for NuGet packaging with appropriate metadata.",
+        "details": "Add .nuspec or update .csproj files with package metadata (authors, description, license, etc.).",
+        "testStrategy": "Build NuGet packages locally and inspect metadata.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Set Up Automated NuGet Publishing",
+        "description": "Configure CI to publish NuGet packages on release tags.",
+        "details": "Add GitHub Actions workflow for publishing to NuGet.org using secure API keys. Implement versioning strategy.",
+        "testStrategy": "Create a test release and verify package is published to NuGet.org.",
+        "priority": "medium",
+        "dependencies": [
+          20,
+          22
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Validate and Enhance Example Applications",
+        "description": "Ensure all example projects compile, run, and demonstrate key features. Add more comprehensive examples as needed.",
+        "details": "Test and update SimpleExample and StreamingExample. Add new examples for advanced scenarios. Document usage.",
+        "testStrategy": "Build and run all examples. Peer review for coverage and clarity.",
+        "priority": "low",
+        "dependencies": [
+          6,
+          13
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Profile and Optimize Performance",
+        "description": "Profile source generator and runtime for performance. Add caching and optimize memory usage where appropriate.",
+        "details": "Use profiling tools to identify bottlenecks. Implement caching strategies and optimize code paths. Add performance benchmarks.",
+        "testStrategy": "Run benchmarks before and after optimization. Document improvements.",
+        "priority": "low",
+        "dependencies": [
+          13,
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-10T20:51:15.031Z",
+      "updated": "2025-08-10T20:52:06.288Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

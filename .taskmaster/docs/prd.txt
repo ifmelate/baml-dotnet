@@ -1,0 +1,146 @@
+# BAML .NET Library - GitHub Publication Preparation
+
+## Project Overview
+Prepare the BAML .NET Client Library for public release on GitHub. This is a comprehensive .NET client library for BAML (Basically a Made-up Language) that uses C# Source Generators to provide type-safe, compile-time code generation for AI workflows and agents.
+
+## Current State Analysis
+The project has a solid foundation with:
+- Core runtime library (Baml.Runtime)
+- Source generator (Baml.SourceGenerator) 
+- Example applications (SimpleExample, StreamingExample)
+- Comprehensive README and implementation notes
+- Visual Studio solution structure
+
+However, several critical issues prevent immediate publication:
+- Build failures due to incorrect BAML parser regex patterns
+- Missing test projects (empty test directories)
+- Nullable reference type warnings in runtime code
+- No Git repository initialization
+- Missing LICENSE file
+- No CI/CD pipeline
+- Missing .gitignore file
+- No NuGet package configuration
+
+## Success Criteria
+The library should be ready for public GitHub release with:
+1. All code compiles successfully without warnings
+2. Comprehensive test coverage
+3. Proper Git repository with clean history
+4. Professional documentation
+5. CI/CD pipeline for automated builds and tests
+6. NuGet package configuration
+7. Code quality standards compliance
+
+## Core Requirements
+
+### 1. Fix Critical Build Issues
+- PRIORITY: HIGH
+- Fix BAML parser PropertyRegex to correctly parse "name type" format instead of "type name"
+- Resolve all compilation errors in examples
+- Fix nullable reference type warnings in BamlRuntime.cs
+- Ensure source generator produces valid C# code
+
+### 2. Git Repository Setup
+- PRIORITY: HIGH  
+- Initialize Git repository with proper .gitignore
+- Create clean initial commit with working codebase
+- Set up branch protection and contribution guidelines
+
+### 3. Legal and Licensing
+- PRIORITY: HIGH
+- Add appropriate LICENSE file (Apache 2.0 as mentioned in README)
+- Add copyright headers to source files
+- Ensure compliance with open source best practices
+
+### 4. Testing Infrastructure
+- PRIORITY: HIGH
+- Implement unit tests for BamlParser class
+- Add integration tests for source generator
+- Create tests for BamlRuntime HTTP functionality
+- Add test projects to solution file
+- Achieve minimum 80% code coverage
+
+### 5. Code Quality Improvements
+- PRIORITY: MEDIUM
+- Fix all nullable reference type warnings
+- Add comprehensive XML documentation
+- Implement proper error handling throughout
+- Add input validation and edge case handling
+- Follow .NET coding conventions and standards
+
+### 6. Documentation Enhancement
+- PRIORITY: MEDIUM
+- Review and improve README.md for clarity
+- Add CONTRIBUTING.md guidelines
+- Create API documentation
+- Add troubleshooting guide
+- Include performance guidelines
+
+### 7. CI/CD Pipeline
+- PRIORITY: MEDIUM
+- Set up GitHub Actions for automated builds
+- Configure automated testing on multiple .NET versions
+- Add code coverage reporting
+- Set up automated security scanning
+
+### 8. Package Management
+- PRIORITY: MEDIUM
+- Configure projects for NuGet packaging
+- Add proper package metadata
+- Set up automated package publishing
+- Create package versioning strategy
+
+### 9. Examples and Samples
+- PRIORITY: LOW
+- Ensure examples compile and run correctly
+- Add more comprehensive examples
+- Create tutorial documentation
+- Add troubleshooting for common issues
+
+### 10. Performance and Optimization
+- PRIORITY: LOW
+- Optimize source generator performance
+- Add caching mechanisms where appropriate
+- Profile memory usage and optimize
+- Add performance benchmarks
+
+## Technical Details
+
+### Build Issues to Fix
+1. BamlParser PropertyRegex pattern: Currently `@"^\s*(\w+)\s+(\w+)(?:\s*@description\(([^)]+)\))?\s*$"` should parse "role string" format but BAML uses "role string" (name first, then type)
+2. Generated code compilation errors related to type resolution
+3. Nullable reference warnings in BamlRuntime.cs lines 64, 89, 104, 135, 136, 126
+
+### Testing Requirements
+- Unit tests for all parser functionality
+- Integration tests for complete BAML-to-C# generation workflow
+- Mock HTTP tests for runtime functionality
+- Examples validation tests
+
+### Documentation Requirements
+- Clear installation instructions
+- Comprehensive API documentation
+- Migration guides if applicable
+- Performance characteristics documentation
+
+## Acceptance Criteria
+- [ ] All projects build without warnings or errors
+- [ ] Test suite runs successfully with >80% coverage
+- [ ] Examples compile and demonstrate functionality
+- [ ] Documentation is complete and accurate
+- [ ] Git repository follows best practices
+- [ ] CI/CD pipeline is functional
+- [ ] Package configuration is ready for publication
+- [ ] Code follows .NET conventions and best practices
+
+## Timeline
+Target completion: 2-3 weeks for full GitHub readiness
+- Week 1: Fix critical build issues, set up Git, add tests
+- Week 2: Code quality improvements, documentation, CI/CD
+- Week 3: Final polish, package configuration, validation
+
+## Stakeholders
+- Development team
+- Open source community
+- BAML ecosystem users
+- .NET developers interested in AI tooling
