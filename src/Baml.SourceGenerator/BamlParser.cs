@@ -1,3 +1,25 @@
+/*
+Copyright (c) 2025 ifmelate
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +49,7 @@ namespace Baml.SourceGenerator
             RegexOptions.Multiline);
 
         private static readonly Regex PropertyRegex = new Regex(
-            @"^\s*(\w+)\s+(\w+)(?:\s*@description\(([^)]+)\))?\s*$",
+            @"^\s*(\w+)\s+(?:(\w+)|""([^""]+)"")(?:\s*@description\(([^)]+)\))?\s*$",
             RegexOptions.Multiline);
 
         public BamlSchema Parse(string content, string filePath)
@@ -62,7 +84,7 @@ namespace Baml.SourceGenerator
                 var parameters = match.Groups[2].Value;
                 var returnType = match.Groups[3].Value.Trim();
                 var functionBody = match.Groups[4].Value;
-                
+
                 var bamlFunction = ParseFunction(functionName, parameters, returnType, functionBody);
                 schema.Functions.Add(bamlFunction);
             }
@@ -73,28 +95,30 @@ namespace Baml.SourceGenerator
         private BamlClass ParseClass(string name, string body)
         {
             var bamlClass = new BamlClass { Name = name };
-            
+
             // Split body into lines and process each line
             var lines = body.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-            
+
             foreach (var line in lines)
             {
                 var trimmedLine = line.Trim();
                 if (string.IsNullOrEmpty(trimmedLine))
                     continue;
-                
+
                 var propertyMatch = PropertyRegex.Match(trimmedLine);
                 if (propertyMatch.Success)
                 {
-                    var propertyType = propertyMatch.Groups[1].Value;
-                    var propertyName = propertyMatch.Groups[2].Value;
-                    var description = propertyMatch.Groups[3].Success ? propertyMatch.Groups[3].Value.Trim('"') : null;
+                    var propertyName = propertyMatch.Groups[1].Value;
+                    var propertyType = propertyMatch.Groups[2].Success ? propertyMatch.Groups[2].Value : "string"; // literal values are strings
+                    var literalValue = propertyMatch.Groups[3].Success ? propertyMatch.Groups[3].Value : null;
+                    var description = propertyMatch.Groups[4].Success ? propertyMatch.Groups[4].Value.Trim('"') : null;
 
                     bamlClass.Properties.Add(new BamlProperty
                     {
                         Name = propertyName,
-                        Type = propertyType,
-                        Description = description
+                        Type = propertyType ?? "string",
+                        Description = description,
+                        LiteralValue = literalValue
                     });
                 }
             }
@@ -105,7 +129,7 @@ namespace Baml.SourceGenerator
         private BamlEnum ParseEnum(string name, string body)
         {
             var bamlEnum = new BamlEnum { Name = name };
-            
+
             var values = body.Split(new[] { ',', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(v => v.Trim().Trim('"'))
                 .Where(v => !string.IsNullOrEmpty(v))
@@ -160,7 +184,7 @@ namespace Baml.SourceGenerator
     /// </summary>
     public class BamlSchema
     {
-        public string FilePath { get; set; }
+        public string FilePath { get; set; } = string.Empty;
         public List<BamlClass> Classes { get; set; } = new List<BamlClass>();
         public List<BamlEnum> Enums { get; set; } = new List<BamlEnum>();
         public List<BamlFunction> Functions { get; set; } = new List<BamlFunction>();
@@ -171,7 +195,7 @@ namespace Baml.SourceGenerator
     /// </summary>
     public class BamlClass
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public List<BamlProperty> Properties { get; set; } = new List<BamlProperty>();
     }
 
@@ -180,9 +204,10 @@ namespace Baml.SourceGenerator
     /// </summary>
     public class BamlProperty
     {
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public string Description { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string? LiteralValue { get; set; }
     }
 
     /// <summary>
@@ -190,7 +215,7 @@ namespace Baml.SourceGenerator
     /// </summary>
     public class BamlEnum
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public List<string> Values { get; set; } = new List<string>();
     }
 
@@ -199,9 +224,9 @@ namespace Baml.SourceGenerator
     /// </summary>
     public class BamlFunction
     {
-        public string Name { get; set; }
-        public string ReturnType { get; set; }
-        public string Client { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string ReturnType { get; set; } = string.Empty;
+        public string? Client { get; set; }
         public List<BamlParameter> Parameters { get; set; } = new List<BamlParameter>();
     }
 
@@ -210,8 +235,8 @@ namespace Baml.SourceGenerator
     /// </summary>
     public class BamlParameter
     {
-        public string Name { get; set; }
-        public string Type { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
     }
 }
 

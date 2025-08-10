@@ -1,0 +1,4 @@
+<Project>
+  <!-- Import main props transitively -->
+  <Import Project="../build/Baml.SourceGenerator.props" />
+</Project>

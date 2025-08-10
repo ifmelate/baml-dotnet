@@ -1,0 +1,184 @@
+name: Build and Publish NuGet Packages
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is-release: ${{ steps.version.outputs.is-release }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for GitVersion and version calculation
+
+      - name: Calculate version
+        id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" && "${{ github.ref_name }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # Release version from tag (e.g., v1.2.3 -> 1.2.3)
+            VERSION=${GITHUB_REF_NAME#v}
+            IS_RELEASE=true
+            echo "GITHUB_REF_TYPE=tag" >> $GITHUB_ENV
+          else
+            # Preview version with build number
+            VERSION="1.0.0-preview.${{ github.run_number }}"
+            IS_RELEASE=false
+            echo "GITHUB_REF_TYPE=branch" >> $GITHUB_ENV
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "is-release=$IS_RELEASE" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+          echo "Is Release: $IS_RELEASE"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --logger trx --results-directory ./TestResults
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            ./TestResults/**/*.xml
+            ./TestResults/**/*.trx
+            ./TestResults/**/coverage.cobertura.xml
+
+      - name: Pack NuGet packages
+        run: |
+          dotnet pack src/Baml.Runtime/Baml.Runtime.csproj --configuration Release --no-build --output ./packages
+          dotnet pack src/Baml.SourceGenerator/Baml.SourceGenerator.csproj --configuration Release --no-build --output ./packages
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+
+      - name: List packages
+        run: |
+          echo "Generated packages:"
+          ls -la ./packages/*.nupkg
+          echo ""
+          echo "Package details:"
+          for pkg in ./packages/*.nupkg; do
+            echo "Package: $(basename $pkg)"
+            unzip -l "$pkg" | head -20
+            echo "---"
+          done
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: ./packages/*.nupkg
+
+  publish-nuget:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: needs.build-and-test.outputs.is-release == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    environment:
+      name: nuget-org
+      url: https://www.nuget.org/packages?q=Baml
+
+    steps:
+      - name: Download NuGet packages
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: ./packages
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Verify package versions
+        run: |
+          echo "Publishing packages for version: ${{ needs.build-and-test.outputs.version }}"
+          echo "Is release: ${{ needs.build-and-test.outputs.is-release }}"
+          echo "Packages to publish:"
+          for pkg in ./packages/*.nupkg; do
+            echo "  - $(basename $pkg)"
+          done
+
+      - name: Publish to NuGet
+        run: |
+          for pkg in ./packages/*.nupkg; do
+            echo "Publishing $(basename $pkg)..."
+            dotnet nuget push "$pkg" \
+              --api-key ${{ secrets.NUGET_API_KEY }} \
+              --source https://api.nuget.org/v3/index.json \
+              --skip-duplicate \
+              --timeout 300
+          done
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+  # Optional: Publish preview versions to GitHub Packages
+  publish-github-packages:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      packages: write
+      contents: read
+    environment:
+      name: github-packages
+      url: https://github.com/${{ github.repository }}/packages
+
+    steps:
+      - name: Download NuGet packages
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: ./packages
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Add GitHub NuGet source
+        run: |
+          dotnet nuget add source \
+            --username ${{ github.actor }} \
+            --password ${{ secrets.GITHUB_TOKEN }} \
+            --store-password-in-clear-text \
+            --name github \
+            "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+
+      - name: Publish to GitHub Packages
+        run: |
+          for pkg in ./packages/*.nupkg; do
+            echo "Publishing $(basename $pkg) to GitHub Packages..."
+            dotnet nuget push "$pkg" \
+              --source "github" \
+              --skip-duplicate \
+              --timeout 300
+          done

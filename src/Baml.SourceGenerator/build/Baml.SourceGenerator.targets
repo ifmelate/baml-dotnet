@@ -1,0 +1,23 @@
+<Project>
+  
+  <!-- Include the source generator analyzer -->
+  <ItemGroup Condition="'$(BamlGeneratorEnabled)' == 'true'">
+    <Analyzer Include="$(MSBuildThisFileDirectory)../analyzers/dotnet/cs/Baml.SourceGenerator.dll" />
+  </ItemGroup>
+  
+  <!-- Reference the runtime library -->
+  <ItemGroup Condition="'$(BamlGeneratorEnabled)' == 'true'">
+    <PackageReference Include="Baml.Runtime" Version="1.0.0" />
+  </ItemGroup>
+  
+  <!-- Custom MSBuild task to validate BAML files -->
+  <Target Name="ValidateBamlFiles" BeforeTargets="CoreCompile" Condition="'$(BamlGeneratorEnabled)' == 'true'">
+    <ItemGroup>
+      <BamlFiles Include="@(AdditionalFiles)" Condition="'%(Extension)' == '.baml'" />
+    </ItemGroup>
+    
+    <Message Text="Found @(BamlFiles->Count()) BAML schema files" Importance="normal" Condition="@(BamlFiles->Count()) > 0" />
+    <Warning Text="No BAML schema files found. Add .baml files to your project to generate client code." Condition="@(BamlFiles->Count()) == 0" />
+  </Target>
+
+</Project>

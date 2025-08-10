@@ -1,0 +1,26 @@
+<Project>
+  
+  <PropertyGroup>
+    <!-- Enable BAML source generation by default -->
+    <BamlGeneratorEnabled Condition="'$(BamlGeneratorEnabled)' == ''">true</BamlGeneratorEnabled>
+    
+    <!-- Default namespace for generated code -->
+    <BamlGeneratorNamespace Condition="'$(BamlGeneratorNamespace)' == ''">$(RootNamespace).Generated</BamlGeneratorNamespace>
+    
+    <!-- Default BAML schema file patterns -->
+    <BamlSchemaPattern Condition="'$(BamlSchemaPattern)' == ''">**/*.baml</BamlSchemaPattern>
+  </PropertyGroup>
+  
+  <!-- Make properties available to the source generator -->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="BamlGeneratorEnabled" />
+    <CompilerVisibleProperty Include="BamlGeneratorNamespace" />
+    <CompilerVisibleProperty Include="BamlSchemaPattern" />
+  </ItemGroup>
+  
+  <!-- Automatically include BAML files -->
+  <ItemGroup Condition="'$(BamlGeneratorEnabled)' == 'true'">
+    <AdditionalFiles Include="$(BamlSchemaPattern)" />
+  </ItemGroup>
+
+</Project>

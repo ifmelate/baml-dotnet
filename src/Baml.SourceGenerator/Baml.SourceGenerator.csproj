@@ -4,17 +4,45 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>Baml.SourceGenerator</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
-    <Authors>Manus AI</Authors>
-    <Description>Source generator for BAML (Basically a Made-up Language) client libraries in .NET</Description>
+    <DevelopmentDependency>true</DevelopmentDependency>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    
+    <!-- Package-specific metadata -->
+    <PackageId>Baml.SourceGenerator</PackageId>
+    <Description>Source generator for BAML (Basically a Made-up Language) client libraries in .NET</Description>
+    <PackageTags>baml;source-generator;ai;machine-learning;code-generation</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- MSBuild integration files -->
+    <None Include="build\Baml.SourceGenerator.props" Pack="true" PackagePath="build\" />
+    <None Include="build\Baml.SourceGenerator.targets" Pack="true" PackagePath="build\" />
+    <None Include="buildTransitive\Baml.SourceGenerator.props" Pack="true" PackagePath="buildTransitive\" />
+    <None Include="buildTransitive\Baml.SourceGenerator.targets" Pack="true" PackagePath="buildTransitive\" />
+    
+    <!-- Analyzer release notes -->
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+
+  <!-- Include the analyzer DLL in the package -->
+  <ItemGroup>
+    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers\dotnet\cs\$(AssemblyName).dll" Visible="false" />
+  </ItemGroup>
+  
+  <!-- Ensure the DLL is included during packing -->
+  <Target Name="IncludeAnalyzer" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)$(AssemblyName).dll" PackagePath="analyzers\dotnet\cs\$(AssemblyName).dll" />
+    </ItemGroup>
+  </Target>
 
 </Project>

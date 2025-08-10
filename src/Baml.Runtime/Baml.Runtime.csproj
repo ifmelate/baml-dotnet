@@ -3,7 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    
+    <!-- Package-specific metadata -->
+    <PackageId>Baml.Runtime</PackageId>
+    <Description>Runtime library for BAML (Basically a Made-up Language) client libraries in .NET</Description>
+    <PackageTags>baml;runtime;ai;machine-learning;http-client</PackageTags>
   </PropertyGroup>
 
 </Project>

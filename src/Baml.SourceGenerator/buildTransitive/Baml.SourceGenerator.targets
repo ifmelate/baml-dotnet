@@ -1,0 +1,4 @@
+<Project>
+  <!-- Import main targets transitively -->
+  <Import Project="../build/Baml.SourceGenerator.targets" />
+</Project>

@@ -5,11 +5,19 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+    <BamlGeneratorNamespace>Baml.Generated</BamlGeneratorNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="../../src/Baml.Runtime/Baml.Runtime.csproj" />
-    <Analyzer Include="../../src/Baml.SourceGenerator/bin/Debug/netstandard2.0/Baml.SourceGenerator.dll" />
+    <ProjectReference Include="../../src/Baml.SourceGenerator/Baml.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <!-- Exclude on-disk generator outputs from compilation (generated files are already part of the compilation) -->
+  <ItemGroup>
+    <Compile Remove="Generated/**/*.cs" />
   </ItemGroup>
 
   <ItemGroup>

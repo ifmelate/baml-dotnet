@@ -1,6 +1,6 @@
 # BAML .NET Client Library
 
-A comprehensive .NET client library for BAML (Basically a Made-up Language) that uses C# Source Generators to provide type-safe, compile-time code generation for AI workflows and agents.
+A .NET client library for BAML (Basically a Made-up Language) that uses C# Source Generators to provide type-safe, compile-time code generation for AI workflows and agents.
 
 ## Overview
 
@@ -20,12 +20,32 @@ This library brings the power of BAML to the .NET ecosystem, allowing developers
 
 ### 1. Installation
 
+#### From NuGet (Recommended)
+
+Install the BAML packages from NuGet:
+
+```bash
+dotnet add package Baml.Runtime
+dotnet add package Baml.SourceGenerator
+```
+
+Or add them to your project file:
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Baml.Runtime" Version="1.0.0" />
+  <PackageReference Include="Baml.SourceGenerator" Version="1.0.0" />
+</ItemGroup>
+```
+
+#### From Source (Development)
+
 Add the BAML libraries to your project:
 
 ```xml
 <ItemGroup>
   <ProjectReference Include="path/to/Baml.Runtime/Baml.Runtime.csproj" />
-  <Analyzer Include="path/to/Baml.SourceGenerator/bin/Debug/netstandard2.0/Baml.SourceGenerator.dll" />
+  <ProjectReference Include="path/to/Baml.SourceGenerator/Baml.SourceGenerator.csproj" />
 </ItemGroup>
 ```
 
@@ -251,6 +271,24 @@ dotnet restore
 dotnet build
 ```
 
+### Building Packages Locally
+
+Use the provided scripts to build NuGet packages for testing:
+
+**Linux/macOS:**
+```bash
+./scripts/build-packages.sh
+```
+
+**Windows:**
+```powershell
+.\scripts\build-packages.ps1
+```
+
+**Options:**
+- `-SkipTests`: Skip running tests (PowerShell only)
+- `-TestInstall`: Test package installation after building (PowerShell only)
+
 ### Running Examples
 
 ```bash
@@ -311,11 +349,16 @@ For issues and questions:
 2. Review the [BAML documentation](https://docs.boundaryml.com/)
 3. Open an issue on GitHub
 
-## Roadmap
+## Package Information
 
-- [ ] NuGet package distribution
-- [ ] Additional BAML language features
-- [ ] Performance optimizations
-- [ ] Integration with popular .NET frameworks (ASP.NET Core, Blazor)
-- [ ] Visual Studio extension for BAML syntax highlighting
+### Available on NuGet
+
+- **Baml.Runtime**: [![NuGet](https://img.shields.io/nuget/v/Baml.Runtime.svg)](https://www.nuget.org/packages/Baml.Runtime/)
+- **Baml.SourceGenerator**: [![NuGet](https://img.shields.io/nuget/v/Baml.SourceGenerator.svg)](https://www.nuget.org/packages/Baml.SourceGenerator/)
+
+### Version Information
+
+- **Release packages**: Published from git tags (e.g., `v1.0.0` → `1.0.0`)
+- **Preview packages**: Published from main branch commits (e.g., `1.0.0-preview.42`)
+
 
