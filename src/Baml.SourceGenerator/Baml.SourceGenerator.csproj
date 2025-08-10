@@ -8,7 +8,8 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <DevelopmentDependency>true</DevelopmentDependency>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <NoWarn>$(NoWarn);NU5128;NU5017</NoWarn>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     
     <!-- Package-specific metadata -->
     <PackageId>Baml.SourceGenerator</PackageId>
@@ -33,16 +34,10 @@
     <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
   </ItemGroup>
 
-  <!-- Include the analyzer DLL in the package -->
+  <!-- Include the analyzer DLL in the package (recommended approach) -->
   <ItemGroup>
-    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers\dotnet\cs\$(AssemblyName).dll" Visible="false" />
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)\$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
-  
-  <!-- Ensure the DLL is included during packing -->
-  <Target Name="IncludeAnalyzer" BeforeTargets="GenerateNuspec">
-    <ItemGroup>
-      <TfmSpecificPackageFile Include="$(OutputPath)$(AssemblyName).dll" PackagePath="analyzers\dotnet\cs\$(AssemblyName).dll" />
-    </ItemGroup>
-  </Target>
 
 </Project>
