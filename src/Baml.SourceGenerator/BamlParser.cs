@@ -49,7 +49,7 @@ namespace Baml.SourceGenerator
             RegexOptions.Multiline);
 
         private static readonly Regex PropertyRegex = new Regex(
-            @"^\s*(\w+)\s+(?:(\w+)|""([^""]+)"")(?:\s*@description\(([^)]+)\))?\s*$",
+            @"^\s*(\w+)\s+(?:(\w+)|""([^""]+)"")(?:\s*@description\(""(.*?)""\))?\s*$",
             RegexOptions.Multiline);
 
         public BamlSchema Parse(string content, string filePath)
@@ -111,7 +111,7 @@ namespace Baml.SourceGenerator
                     var propertyName = propertyMatch.Groups[1].Value;
                     var propertyType = propertyMatch.Groups[2].Success ? propertyMatch.Groups[2].Value : "string"; // literal values are strings
                     var literalValue = propertyMatch.Groups[3].Success ? propertyMatch.Groups[3].Value : null;
-                    var description = propertyMatch.Groups[4].Success ? propertyMatch.Groups[4].Value.Trim('"') : null;
+                    var description = propertyMatch.Groups[4].Success ? propertyMatch.Groups[4].Value : null;
 
                     bamlClass.Properties.Add(new BamlProperty
                     {
